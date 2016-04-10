@@ -1,6 +1,6 @@
 {
-	"ImportPath": "git.avelino.xxx/mdata/metaimage",
-	"GoVersion": "go1.4.2",
+	"ImportPath": "shelfgit.com/mdata/metaimage",
+	"GoVersion": "go1.6",
 	"Deps": [
 		{
 			"ImportPath": "github.com/jyotiska/go-webcolors",

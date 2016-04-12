@@ -1,16 +1,22 @@
 package main
 
 import (
+	"crypto/md5"
 	"fmt"
 	gwc "github.com/jyotiska/go-webcolors"
 	"github.com/nfnt/resize"
+	"html/template"
 	"image"
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
+	"io"
 	"math"
+	"net/http"
 	"os"
 	"sort"
+	"strconv"
+	"time"
 )
 
 // This method finds the closest color for a given RGB tuple and returns the name of the color in given mode
@@ -50,8 +56,8 @@ func ReverseMap(m map[string]int) map[int]string {
 	return n
 }
 
-func main() {
-	reader, err := os.Open(os.Args[1])
+func ImageProcess(path string) ([]int, map[int]string, int) {
+	reader, err := os.Open(path)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 	}
@@ -67,7 +73,6 @@ func main() {
 	bounds := image.Bounds()
 
 	ColorCounter := make(map[string]int)
-	Limit := 5 // Limiting how many colors to be displayed in output
 	TotalPixels := bounds.Max.X * bounds.Max.Y
 
 	for i := 0; i <= bounds.Max.X; i++ {
@@ -94,8 +99,47 @@ func main() {
 
 	ReverseColorCounter := ReverseMap(ColorCounter)
 
-	// Display the top N dominant colors from the image
-	for _, val := range keys[:Limit] {
-		fmt.Printf("%s %.2f%%\n", ReverseColorCounter[val], ((float64(val) / float64(TotalPixels)) * 100))
+	return keys, ReverseColorCounter, TotalPixels
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("method:", r.Method)
+	if r.Method == "GET" {
+		crutime := time.Now().Unix()
+		h := md5.New()
+		io.WriteString(h, strconv.FormatInt(crutime, 10))
+		token := fmt.Sprintf("%x", h.Sum(nil))
+
+		t, _ := template.ParseFiles("upload.gtpl")
+		t.Execute(w, token)
+	} else {
+		r.ParseMultipartForm(32 << 20)
+		file, handler, err := r.FormFile("uploadfile")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		defer file.Close()
+		fmt.Fprintf(w, "%v", handler.Header)
+		path := "./images/" + handler.Filename
+		f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		defer f.Close()
+		io.Copy(f, file)
+
+		keys, ReverseColorCounter, TotalPixels := ImageProcess(path)
+		for _, val := range keys[:5] {
+			fmt.Printf("%s %.2f%%\n", ReverseColorCounter[val], ((float64(val) / float64(TotalPixels)) * 100))
+			fmt.Fprintf(w, "\n%s %.2f%%\n", ReverseColorCounter[val], ((float64(val) / float64(TotalPixels)) * 100))
+		}
+
 	}
+}
+
+func main() {
+	http.HandleFunc("/", handler)
+	http.ListenAndServe(":8080", nil)
 }

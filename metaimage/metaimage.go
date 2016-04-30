@@ -12,6 +12,7 @@ import (
 
 	gwc "github.com/jyotiska/go-webcolors"
 	"github.com/nfnt/resize"
+	"github.com/rwcarlsen/goexif/exif"
 )
 
 // This method finds the closest color for a given RGB tuple and returns the name of the color in given mode
@@ -95,4 +96,19 @@ func ImageProcess(path string) ([]int, map[int]string, int) {
 	ReverseColorCounter := ReverseMap(ColorCounter)
 
 	return keys, ReverseColorCounter, TotalPixels
+}
+
+func GetMetadata(path string) (*exif.Exif, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+
+	defer file.Close()
+	x, err := exif.Decode(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return x, nil
 }

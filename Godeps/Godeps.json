@@ -1,5 +1,5 @@
 {
-	"ImportPath": "shelfgit.com/mdata/metaimage",
+	"ImportPath": "beta.shelfgit.com/mdata/metaimage",
 	"GoVersion": "go1.6",
 	"Deps": [
 		{

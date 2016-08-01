@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"time"
 
-	"shelfgit.com/mdata/metaimage/metaimage"
+	"beta.shelfgit.com/mdata/metaimage/metaimage"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {

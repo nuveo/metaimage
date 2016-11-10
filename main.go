@@ -4,14 +4,13 @@ import (
 	"crypto/md5"
 	"fmt"
 	"html/template"
-
 	"io"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
 
-	"beta.shelfgit.com/mdata/metaimage/metaimage"
+	"shelfgit.com/mdata/metaimage/metaimage"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {

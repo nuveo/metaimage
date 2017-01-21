@@ -1,12 +1,10 @@
-FROM poorny/base
-
-RUN go get github.com/jyotiska/go-webcolors
-RUN go get github.com/nfnt/resize
+FROM golang:1.7
 
 ADD . /go/src/shelfgit.com/mdata/metaimage
 WORKDIR /go/src/shelfgit.com/mdata/metaimage
 
-RUN godep get
+RUN go get -u github.com/kardianos/govendor
+RUN govendor fetch +e
 
 RUN go install shelfgit.com/mdata/metaimage
 

@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"time"
 
-	"shelfgit.com/mdata/metaimage/metaimage"
+	"github.com/nuveo/metaimage/metaimage"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {

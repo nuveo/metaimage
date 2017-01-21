@@ -1,11 +1,9 @@
 FROM golang:1.7
 
-ADD . /go/src/shelfgit.com/mdata/metaimage
-WORKDIR /go/src/shelfgit.com/mdata/metaimage
+RUN git clone https://github.com/nuveo/metaimage.git /go/src/github.com/nuveo/metaimage
+WORKDIR /go/src/github.com/nuveo/metaimage
 
 RUN go get -u github.com/kardianos/govendor
 RUN govendor fetch +e
-
-RUN go install shelfgit.com/mdata/metaimage
 
 CMD ["go", "run", "main.go"]
